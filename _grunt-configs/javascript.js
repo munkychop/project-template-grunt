@@ -1,7 +1,5 @@
 'use strict';
 
-var _alias = require('browserify-alias-grunt');
-
 module.exports = function (grunt, sharedConfig) {
 
     var _srcDir = sharedConfig.srcDir + 'js/';
@@ -14,17 +12,6 @@ module.exports = function (grunt, sharedConfig) {
     var _testSpecDir = _testDir + 'spec/';
     var _testBinDir = _testDir + 'bin/';
     var _testSpecFile = 'test-spec-compiled.js';
-
-    // build an object that is compatible with grunt-exorcise, as it doesn't seem to support
-    // src and dest within its 'file' object.
-    var _exorciseFileObjectTestAll = {};
-    _exorciseFileObjectTestAll[_testBinDir + _testSpecFile + '.map'] = _testBinDir + _testSpecFile;
-
-    var _browserifyAliasArray = _alias.map(grunt, {
-        cwd : _srcDir,
-        src : ['**/*.js', '!' + _srcFile],
-        dest : ''
-    });
 
     var _paths = {
         srcDir : _srcDir,
@@ -43,11 +30,28 @@ module.exports = function (grunt, sharedConfig) {
                 src : _testSpecDir + '**/*.js',
                 dest : _testBinDir + _testSpecFile,
                 options : {
-                    alias : _browserifyAliasArray,
 
                     browserifyOptions : {
-                        debug: true
+                        debug: true,
+                        fullPaths: false
                     },
+
+                    plugin: [
+                        [
+                          'remapify', {
+                              cwd: _srcDir, // defaults to process.cwd()
+                              src: '**/*.js',
+                              expose: ''
+                            }
+                          
+                        ],
+                        [
+                            'minifyify', {
+                                map: _testBinDir + _testSpecFile + '.map',
+                                output: _testBinDir + _testSpecFile + '.map',
+                            }
+                        ]
+                    ],
 
                     banner : 'require("source-map-support").install(); var expect = require("chai").expect;',
 
@@ -59,11 +63,21 @@ module.exports = function (grunt, sharedConfig) {
                 src : _srcDir + _srcFile,
                 dest : _distDir + _distFile,
                 options : {
-                    alias : _browserifyAliasArray,
 
                     browserifyOptions : {
-                        debug: true
+                        debug: true,
+                        fullPaths: false
                     },
+
+                    plugin: [
+                        [
+                          'remapify', {
+                              cwd: _srcDir, // defaults to process.cwd()
+                              src: '**/*.js',
+                              expose: ''
+                            }
+                        ]
+                    ],
 
                     watch: true // use watchify instead of grunt-contrib-watch (much much faster!).
                 }
@@ -73,24 +87,33 @@ module.exports = function (grunt, sharedConfig) {
                 src : _srcDir + _srcFile,
                 dest : _distDir + _distFile,
                 options : {
-                    alias : _browserifyAliasArray,
 
                     browserifyOptions : {
-                        debug: false
+                        debug: false,
+                        fullPaths: false
                     },
+
+                    plugin: [
+                        [
+                          'remapify', {
+                              cwd: _srcDir, // defaults to process.cwd()
+                              src: '**/*.js',
+                              expose: ''
+                            }
+                          
+                        ],
+                        [
+                            'minifyify', {
+                                map: false,
+                                uglify: {
+                                    compress: {
+                                        drop_console: true
+                                    }
+                                }
+                            }
+                        ]
+                    ]
                 }
-            }
-        },
-
-
-        /**
-         * Grunt Exorcise
-         * https://github.com/mikefrey/grunt-exorcise
-         * Move Browserify source maps to a separate file using Exorcist and Grunt.
-         */
-        exorcise: {
-            testAll: {
-                files: _exorciseFileObjectTestAll
             }
         },
 
@@ -140,14 +163,12 @@ module.exports = function (grunt, sharedConfig) {
         compile : {
             test : [
                 'browserify:testAll',
-                'exorcise:testAll'
             ],
             dev : [
                 'browserify:dev'
             ],
             dist : [
                 'browserify:dist',
-                'uglify'
             ]
         },
         test : {
