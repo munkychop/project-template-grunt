@@ -48,7 +48,7 @@ module.exports = function (grunt, sharedConfig) {
                         [
                             'minifyify', {
                                 map: _testBinDir + _testSpecFile + '.map',
-                                output: _testBinDir + _testSpecFile + '.map',
+                                output: _testBinDir + _testSpecFile + '.map'
                             }
                         ]
                     ],
@@ -114,19 +114,6 @@ module.exports = function (grunt, sharedConfig) {
                         ]
                     ]
                 }
-            }
-        },
-
-
-        uglify: {
-            options: {
-                compress: {
-                    drop_console: true
-                }
-            },
-            dev: {
-                src : _distDir + _distFile,
-                dest : _distDir + _distFile
             }
         },
 
