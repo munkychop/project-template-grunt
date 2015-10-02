@@ -149,13 +149,13 @@ module.exports = function (grunt, sharedConfig) {
     var _tasks = {
         compile : {
             test : [
-                'browserify:testAll',
+                'browserify:testAll'
             ],
             dev : [
                 'browserify:dev'
             ],
             dist : [
-                'browserify:dist',
+                'browserify:dist'
             ]
         },
         test : {
