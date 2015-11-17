@@ -8,7 +8,8 @@ module.exports =  function (grunt, sharedConfig) {
 
 	var _imageSrcDir = sharedConfig.srcDir + 'img/';
 	var _imageDistDir = sharedConfig.distDir + 'img/';
-	var _grunticonSrcDir = _imageSrcDir + 'icons/';
+	var _grunticonDirName = 'icons/';
+	var _grunticonSrcDir = _imageSrcDir + _grunticonDirName;
 	var _grunticonDistDir = _imageDistDir + 'icons/';
 	var _favicon = 'favicon.ico';
 
@@ -56,7 +57,7 @@ module.exports =  function (grunt, sharedConfig) {
 				files: [{
 					expand: true,
 					cwd: _imageSrcDir,
-					src: ['**/*.{svg,png,jpg,gif}'],
+					src: ['**/*.{svg,png,jpg,gif}', '!' + _grunticonDirName + '**/*.*'],
 					dest: _imageDistDir
 				}]
 			}
